@@ -63,13 +63,17 @@ def main():
     if len(arguments) == 0:                     # If no arguments
         usage(1)
 
-    for arg in arguments[::2]:
-        if arg == '-h':                       # Hammers
-            if int(arguments[index])
-                hammers = arguments[index]
+    for arg in arguments:
+        if skip:
+            skip = False
+        elif arg == '-h':                       # Hammers
+            if int(arguments[index+1])
+                hammers = arguments[index+1]
+                skip = True
         elif arg == '-t':                       # Throws
-            if int(arguments[index])
-                throws = arguments[index]
+            if int(arguments[index+1])
+                throws = arguments[index+1]
+                skip = True
         elif arg == '-v':                       # Verbose flag
             verbose = True
         elif arg[0] == '-' and len(arg) == 2:   # Prevents unknown flags
