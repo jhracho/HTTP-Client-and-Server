@@ -39,7 +39,6 @@ def main():
     verbose = False
     url     = ''
 
-    # F
     # Parse command line arguments
     arguments = sys.argv[1::]
     skip = False
