@@ -37,9 +37,37 @@ def main():
     hammers = 1
     throws  = 1
     verbose = False
+    url     = ''
 
     # Parse command line arguments
-    pass
+    arguments = sys.argv[1::]
+    skip = False
+    index = 1
+
+    if arguments == []:
+        usage(1)
+
+    for arg in arguments:
+        if arg == '-h':
+            usage(0)
+        elif skip:
+            skip = False
+        elif arg == '-h':
+            hammers = arguments[index]
+            skip = True
+        elif arg == 't':
+            throws = arguments[index]
+            skip = True
+        elif arg == 'v':
+            verbose = True
+        else:
+            url = arg
+            break
+        index += 1
+
+    if url == '':
+        usage(1)
+
 
     # Create pool of workers and perform throws
     pass
