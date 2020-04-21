@@ -44,28 +44,28 @@ def main():
     skip = False
     index = 1
 
-    if arguments == []:
+    if arguments == []:                         # If no arguments
         usage(1)
 
     for arg in arguments:
         if skip:
             skip = False
-        elif arg == '-h':
+        elif arg == '-h':                       # Hammers
             hammers = arguments[index]
             skip = True
-        elif arg == '-t':
+        elif arg == '-t':                       # Throws
             throws = arguments[index]
             skip = True
-        elif arg == '-v':
+        elif arg == '-v':                       # Verbose flag
             verbose = True
-        elif arg[0] == '-' and len(arg) == 2:  # Prevents unknown flags
+        elif arg[0] == '-' and len(arg) == 2:   # Prevents unknown flags
             usage(1)
         else:
             url = arg
             break
         index += 1
 
-    if url == '':
+    if url == '':                               # If no URL
         usage(1)
 
 
