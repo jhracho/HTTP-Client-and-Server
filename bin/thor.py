@@ -39,7 +39,6 @@ def main():
     verbose = False
     url     = ''
 
-    # F
     # Parse command line arguments
     arguments = sys.argv[1::]
     skip = False
@@ -56,10 +55,10 @@ def main():
         elif arg == '-h':
             hammers = arguments[index]
             skip = True
-        elif arg == 't':
+        elif arg == '-t':
             throws = arguments[index]
             skip = True
-        elif arg == 'v':
+        elif arg == '-v':
             verbose = True
         else:
             url = arg
