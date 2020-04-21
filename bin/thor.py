@@ -32,17 +32,25 @@ def hammer(url, throws, verbose, hid):
     
     # for loop for individual throws
     for i in range(throws):
+        
+        # HTTP Request
         tSStart = time.time()
-
-        # TODO: HTTP REQUEST GOES HERE
-
+        r = requests.get(url);
         tSEnd = time.time()
+
+        if (verbose):
+            print(r.text)
+
         tSElapsed = tSEnd - tSStart
-        elapsedTimes.append(tsElapsed)
-        print(f'Hammer: {hid}, Throw:  {i}, Elapsed Time: {tsElapsed}')
+        elapsedTimes.append(tSElapsed)
+        print(f'Hammer: {hid}, Throw:   {i}, Elapsed Time: {tSElapsed:0.2f}')
 
     # Returns average elapsed time for a particular hammer
-    return sum(elapsedTimes) / len(elapsedTimes)
+
+    tSAVG = sum(elapsedTimes) / len(elapsedTimes)
+    print(f'Hammer: {hid}, AVERAGE   , Elapsed Time: {tSAVG:0.2f}')
+
+    return tSAVG;
 
 def do_hammer(args):
     ''' Use args tuple to call `hammer` '''
@@ -67,12 +75,12 @@ def main():
         if skip:
             skip = False
         elif arg == '-h':                       # Hammers
-            if int(arguments[index])
-                hammers = arguments[index]
+            if int(arguments[index]):
+                hammers = int(arguments[index])
                 skip = True
         elif arg == '-t':                       # Throws
-            if int(arguments[index])
-                throws = arguments[index]
+            if int(arguments[index]):
+                throws = int(arguments[index])
                 skip = True
         elif arg == '-v':                       # Verbose flag
             verbose = True
@@ -92,11 +100,9 @@ def main():
     avgTimes = []
     args = ((url, throws, verbose, hid) for hid in range(hammers))
     with concurrent.futures.ProcessPoolExecutor(hammers) as executor:
-        avgElapsed = do_hammer(args)
-        avgTimes.append(avgElapsed)
-        print(f'Hammer: {hid}, AVERAGE:  , Elapsed Time: {avgTime}')
-
-    printf(f'TOTAL AVERAGE ELAPSED TIME: {sum(avgTimes)/len(avgTimes)}')
+        avgElapsed = list(executor.map(do_hammer, args))
+        
+    print(f'TOTAL AVERAGE ELAPSED TIME: {sum(avgElapsed)/len(avgElapsed):0.2f}')
     
 
 # Main execution
