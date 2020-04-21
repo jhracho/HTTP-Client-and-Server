@@ -67,12 +67,12 @@ def main():
         if skip:
             skip = False
         elif arg == '-h':                       # Hammers
-            if int(arguments[index+1])
-                hammers = arguments[index+1]
+            if int(arguments[index])
+                hammers = arguments[index]
                 skip = True
         elif arg == '-t':                       # Throws
-            if int(arguments[index+1])
-                throws = arguments[index+1]
+            if int(arguments[index])
+                throws = arguments[index]
                 skip = True
         elif arg == '-v':                       # Verbose flag
             verbose = True
@@ -82,7 +82,7 @@ def main():
             url = arg
             setURL = True
             break
-        index += 2
+        index += 1
 
     if not setURL:                              # If no URL
         usage(1)
