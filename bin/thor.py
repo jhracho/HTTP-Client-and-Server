@@ -48,9 +48,7 @@ def main():
         usage(1)
 
     for arg in arguments:
-        if arg == '-h':
-            usage(0)
-        elif skip:
+        if skip:
             skip = False
         elif arg == '-h':
             hammers = arguments[index]
@@ -60,6 +58,8 @@ def main():
             skip = True
         elif arg == '-v':
             verbose = True
+        elif arg[0] == '-' and len(arg) == 2:  # Prevents unknown flags
+            usage(1)
         else:
             url = arg
             break
