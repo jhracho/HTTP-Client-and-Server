@@ -27,7 +27,20 @@ def hammer(url, throws, verbose, hid):
 
     Return the average elapsed time of all the throws.
     '''
-    return 0
+    hammerNum = 0
+    throwNum  = 0
+
+    # Time each process
+    start_time = time.time()
+
+    # Declare process pool and execute
+    with concurrent.futures.ProcessPoolExecutor(cores) as executor:
+        pass
+
+
+    end_time   = time.time()
+    elspased_time = end_time - start_time
+    return elapsed_time
 
 def do_hammer(args):
     ''' Use args tuple to call `hammer` '''
