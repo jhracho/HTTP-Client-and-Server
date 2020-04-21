@@ -27,20 +27,22 @@ def hammer(url, throws, verbose, hid):
 
     Return the average elapsed time of all the throws.
     '''
-    hammerNum = 0
-    throwNum  = 0
+    # Declaring elapsed time list for avg calculation
+    elapsedTimes = []
+    
+    # for loop for individual throws
+    for i in range(throws):
+        tSStart = time.time()
 
-    # Time each process
-    start_time = time.time()
+        # TODO: HTTP REQUEST GOES HERE
 
-    # Declare process pool and execute
-    with concurrent.futures.ProcessPoolExecutor(cores) as executor:
-        pass
+        tSEnd = time.time()
+        tSElapsed = tSEnd - tSStart
+        elapsedTimes.append(tsElapsed)
+        print(f'Hammer: {hid}, Throw:  {i}, Elapsed Time: {tsElapsed}')
 
-
-    end_time   = time.time()
-    elspased_time = end_time - start_time
-    return elapsed_time
+    # Returns average elapsed time for a particular hammer
+    return sum(elapsedTimes) / len(elapsedTimes)
 
 def do_hammer(args):
     ''' Use args tuple to call `hammer` '''
@@ -50,45 +52,52 @@ def main():
     hammers = 1
     throws  = 1
     verbose = False
+    setURL  = False
     url     = ''
 
     # Parse command line arguments
-    arguments = sys.argv[1::]
+    arguments = sys.argv[1:]
     skip = False
     index = 1
 
-    if arguments == []:                         # If no arguments
+    if len(arguments) == 0:                     # If no arguments
         usage(1)
 
     for arg in arguments:
         if skip:
             skip = False
         elif arg == '-h':                       # Hammers
-            hammers = arguments[index]
-            skip = True
+            if int(arguments[index+1])
+                hammers = arguments[index+1]
+                skip = True
         elif arg == '-t':                       # Throws
-            throws = arguments[index]
-            skip = True
+            if int(arguments[index+1])
+                throws = arguments[index+1]
+                skip = True
         elif arg == '-v':                       # Verbose flag
             verbose = True
         elif arg[0] == '-' and len(arg) == 2:   # Prevents unknown flags
             usage(1)
         else:
             url = arg
+            setURL = True
             break
-        index += 1
+        index += 2
 
-    if url == '':                               # If no URL
+    if not setURL:                              # If no URL
         usage(1)
 
-    print(hammers)
-    print(throws)
-    print(verbose)
-    print(url)
-
-
     # Create pool of workers and perform throws
-    pass
+    # TODO: I tried making this similar to HW6 but i am going to OH later to clarify
+    avgTimes = []
+    args = ((url, throws, verbose, hid) for hid in range(hammers))
+    with concurrent.futures.ProcessPoolExecutor(hammers) as executor:
+        avgElapsed = do_hammer(args)
+        avgTimes.append(avgElapsed)
+        print(f'Hammer: {hid}, AVERAGE:  , Elapsed Time: {avgTime}')
+
+    printf(f'TOTAL AVERAGE ELAPSED TIME: {sum(avgTimes)/len(avgTimes)}')
+    
 
 # Main execution
 
