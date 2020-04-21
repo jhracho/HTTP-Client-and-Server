@@ -48,17 +48,15 @@ def main():
         usage(1)
 
     for arg in arguments:
-        if arg == '-h':
-            usage(0)
-        elif skip:
+        if skip:
             skip = False
         elif arg == '-h':
             hammers = arguments[index]
             skip = True
-        elif arg == 't':
+        elif arg == '-t':
             throws = arguments[index]
             skip = True
-        elif arg == 'v':
+        elif arg == '-v':
             verbose = True
         else:
             url = arg
@@ -67,6 +65,11 @@ def main():
 
     if url == '':
         usage(1)
+
+    print(hammers)
+    print(throws)
+    print(verbose)
+    print(url)
 
 
     # Create pool of workers and perform throws
