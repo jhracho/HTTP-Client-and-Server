@@ -21,6 +21,19 @@
 int socket_listen(const char *port) {
     /* Lookup server address information */
 
+    struct addrinfo *results;
+    struct addrinfo hints = {
+        .ai_family   = AF_UNSPEC,   // IPv4 or IPv6
+        .ai_socktype = SOCK_STREAM, // TCP
+        .ai_flags    = AI_PASSIVE   // listen on socket
+    };
+
+    int status = getaddrinfo(NULL, port, &hints, &results);
+    if(status != 0) {
+        fprintf(stdout, "Error message: getaddrinfo\n");
+        return -1;
+    }
+
     /* For each server entry, allocate socket and try to connect */
     int socket_fd = -1;
     for (struct addrinfo *p = results; p != NULL && socket_fd < 0; p = p->ai_next) {
