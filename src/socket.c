@@ -38,10 +38,24 @@ int socket_listen(const char *port) {
     int socket_fd = -1;
     for (struct addrinfo *p = results; p != NULL && socket_fd < 0; p = p->ai_next) {
 	/* Allocate socket */
+        server_fd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if(server_fd < 0) {
+            continue;
+        }
 
 	/* Bind socket */
+        if(bind(server_fd, p->ai_addr, p->ai_addrlen) <0) {
+            close(server_fd);
+            server_fd = -1;
+            continue;
+        }
 
     	/* Listen to socket */
+        if(listen(server_fd, SOMAXCONN) < 0) {
+            close(server_fd);
+            server_fd = -1;
+            continue;
+        }
     }
 
     freeaddrinfo(results);
