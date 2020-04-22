@@ -33,18 +33,39 @@ Request * accept_request(int sfd) {
     socklen_t rlen;
 
     /* Allocate request struct (zeroed) */
+    r = calloc(1, sizeof(Request *));
+    if (!r){
+        debug("Unable to allocate request: %s", strerror(errno));
+        goto fail;
+    }
 
     /* Accept a client */
+    r->fd = accept(sfd, &raddr, &rlen);
+    if (r->fd < 0){
+        debug("Unable to accept: %s", strerror(errno));
+        goto fail;
+    }
 
     /* Lookup client information */
+    int status = getnameinfo(&raddr, rlen, r->host, sizeof(r->host), r->port, sizeof(r->port), NI_NUMERICHOST | NI_NUMERICSERV);
+    if (status < 0){
+        debug("Unable to gernameinfo: %s", gai_strerror(status));
+        goto fail;
+    }
 
     /* Open socket stream */
+    r->stream = fdopen(r->fd, "w+");
+    if (!r->stream){
+        debug("Unable to fdopen: %s", strerror(errno));
+        goto fail;        
+    }
 
     log("Accepted request from %s:%s", r->host, r->port);
     return r;
 
 fail:
     /* Deallocate request struct */
+    free_request(r);
     return NULL;
 }
 
@@ -66,6 +87,7 @@ void free_request(Request *r) {
     }
 
     /* Close socket or fd */
+    fclose(r->stream);
 
     /* Free allocated strings */
 
