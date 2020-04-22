@@ -21,7 +21,12 @@ fffffffffff
 
 ## Contributions
 
-Enumeration of the contributions of each group member.
+Enumeration of the contributions of each group member:
+
+Thor:	Parse Command Line Arguments			- Stuart Hayden
+Thor:	Hammer									- Jake Hracho
+
+
 
 [Final Project]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/project.html
 [CSE 20289 Systems Programming (Spring 2020)]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/
