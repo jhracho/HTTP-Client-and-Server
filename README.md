@@ -23,8 +23,8 @@ fffffffffff
 
 Enumeration of the contributions of each group member:
 
-Thor:	Parse Command Line Arguments			- Stuart Hayden
-Thor:	Hammer, Main							- Jake Hracho
+- Thor:	Parse Command Line Arguments			Stuart Hayden
+- Thor:	Hammer, Main							Jake Hracho
 
 
 
