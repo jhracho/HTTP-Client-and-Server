@@ -90,10 +90,16 @@ void free_request(Request *r) {
     fclose(r->stream);
 
     /* Free allocated strings */
+    free(r->method);
+    free(r->uri);
+    free(r->path);
+    free(r->query);
 
     /* Free headers */
+    free(r->headers);
 
     /* Free request */
+    free(r);
 }
 
 /**
