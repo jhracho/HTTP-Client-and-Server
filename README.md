@@ -25,6 +25,7 @@ Enumeration of the contributions of each group member:
 
 - Thor:	Parse Command Line Arguments --			Stuart Hayden
 - Thor:	Hammer, Main -- 						Jake Hracho
+- Spidey: socket.c -- 							Stuart Hayden
 
 
 
