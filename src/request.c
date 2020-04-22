@@ -49,7 +49,7 @@ Request * accept_request(int sfd) {
     /* Lookup client information */
     int status = getnameinfo(&raddr, rlen, r->host, sizeof(r->host), r->port, sizeof(r->port), NI_NUMERICHOST | NI_NUMERICSERV);
     if (status < 0){
-        debug("Unable to gernameinfo: %s", gai_strerror(status));
+        debug("Unable to getnameinfo: %s", gai_strerror(status));
         goto fail;
     }
 
@@ -87,13 +87,30 @@ void free_request(Request *r) {
     }
 
     /* Close socket or fd */
-    fclose(r->stream);
+    if (r->fd)
+        close(r->fd);
+    else
+        fclose(r->stream);
 
     /* Free allocated strings */
+    free(r->method);
+    free(r->uri);
+    free(r->path)
+    free(r->query);
+    free(r->host);
+    free(r->port);
 
     /* Free headers */
+    Header *next;
+    for (Header *curr = r->headers; curr; curr = curr->next){
+        next = curr->next;
+        free(curr->name);
+        free (curr->data);        
+        curr = next;                    
+    }
 
     /* Free request */
+    free(r);
 }
 
 /**
@@ -107,8 +124,13 @@ void free_request(Request *r) {
  **/
 int parse_request(Request *r) {
     /* Parse HTTP Request Method */
+    if (parse_request_method(r) == -1)
+        return -1;
 
     /* Parse HTTP Requet Headers*/
+    if (parse_request_headers(r) == -1)
+        return -1
+
     return 0;
 }
 
@@ -136,12 +158,28 @@ int parse_request_method(Request *r) {
     char *query;
 
     /* Read line from socket */
+    fgets(buffer, BUFSIZ, r->stream);
 
     /* Parse method and uri */
+    char *method = strtok(buffer, WHITESPACE);
+    char *uri    = strtok(NULL, WHITESPACE);
+    if (!method || !url)
+        return -1;
 
     /* Parse query from uri */
-
+    char *query = strchr(uri, '?');
+    if (!query)
+        query = "";
+    else
+        *query++ = '\0';
+   
     /* Record method, uri, and query in request struct */
+    r->method = strdup(method);
+    r->uri    = strdup(uri);
+    if (strcmp(query, "") != 0)
+        r->query = strdup(query);
+
+    // Debugging
     debug("HTTP METHOD: %s", r->method);
     debug("HTTP URI:    %s", r->uri);
     debug("HTTP QUERY:  %s", r->query);
@@ -186,6 +224,28 @@ int parse_request_headers(Request *r) {
     char *data;
 
     /* Parse headers from socket */
+    while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer != 0)){
+        // Getting header info
+        chomp(buffer);
+        name = skip_whitespace(buffer);
+        data = strchr(name, ':');
+        if (!data)
+            return -1;
+        else
+            *data++ = '\0';
+        data = skip_whitespace(data);
+        
+        // Allocating Header
+        curr = malloc(sizeof(Header));
+        if (!curr)
+            return -1;
+
+        // Setting header and appending it
+        curr->name = strdup(name);
+        curr->data = strdup(data);
+        curr->next = request->headers;
+        request->headers = curr;
+    }
 
 #ifndef NDEBUG
     for (Header *header = r->headers; header; header = header->next) {
