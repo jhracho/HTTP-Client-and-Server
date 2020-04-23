@@ -89,13 +89,14 @@ int main(int argc, char *argv[]) {
     ServerMode mode;
 
     /* Parse command line options */
-    bool valid = parse_options(argc, argv, mode);
+    bool valid = parse_options(argc, argv, &mode);
     if(!valid) {
         fprintf(stderr, "Bad Arguments");
         return EXIT_FAILURE;
     }
 
     /* Listen to server socket */
+    int server_fd = socket_listen(Port);
 
     /* Determine real RootPath */
     log("Listening on port %s", Port);
@@ -105,7 +106,7 @@ int main(int argc, char *argv[]) {
     debug("ConcurrencyMode = %s", mode == SINGLE ? "Single" : "Forking");
 
     /* Start either forking or single HTTP server */
-
+    
 
     return status;
 }
