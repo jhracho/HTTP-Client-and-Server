@@ -82,8 +82,10 @@ const char * http_status_string(Status status) {
         "500 Internal Server Error",
         "418 I'm A Teapot",
     };
+    if (status > 3)
+        return NULL;
 
-    return NULL;
+    return StatusStrings[status];
 }
 
 /**
