@@ -23,7 +23,6 @@ int single_server(int sfd) {
             continue;
         }
 
-
 	/* Handle request */
         handle_request(request);
 
