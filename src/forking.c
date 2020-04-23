@@ -21,10 +21,25 @@ int forking_server(int sfd) {
     /* Accept and handle HTTP request */
     while (true) {
     	/* Accept request */
+        Request *request = accept_client(sfd);
+        if (!request) {
+            log("Unable to accept request %s", strerror(errno));
+            continue;
+        }
 
 	/* Ignore children */
+        signal(SIGCHLD, SIG_IGN);
 
 	/* Fork off child process to handle request */
+        pid_t pid = fork();
+        if(pid == 0) {
+            handle_request(request);
+            free_request(request);
+            exit(EXIT_SUCCESS);
+        }
+        else {
+            free_request(request);
+        }
     }
 
     /* Close server socket */
