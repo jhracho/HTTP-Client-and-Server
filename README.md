@@ -26,7 +26,7 @@ Enumeration of the contributions of each group member:
 - Spidey: single.c -- 							Jake Hracho
 - Spidey: forking.c -- 							Stuart Hayden
 - Spidey: request.c -- 							Jake Hracho
-- Spidey: handler.c -- 							Stuart Hayden
+- Spidey: handler.c -- 							Stuart Hayden / Jake Hracho
 - Spidey: utils.c -- 							Stuart Hayden / Jake Hracho
 - Spidey: spidey.c -- 							Stuart Hayden
 
