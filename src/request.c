@@ -95,19 +95,11 @@ void free_request(Request *r) {
     /* Free allocated strings */
     free(r->method);
     free(r->uri);
-    free(r->path)
+    free(r->path);
     free(r->query);
-    free(r->host);
-    free(r->port);
 
     /* Free headers */
-    Header *next;
-    for (Header *curr = r->headers; curr; curr = curr->next){
-        next = curr->next;
-        free(curr->name);
-        free (curr->data);        
-        curr = next;                    
-    }
+    free(r->headers);
 
     /* Free request */
     free(r);

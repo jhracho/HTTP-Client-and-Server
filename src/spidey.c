@@ -89,6 +89,11 @@ int main(int argc, char *argv[]) {
     ServerMode mode;
 
     /* Parse command line options */
+    bool valid = parse_options(argc, argv, mode);
+    if(!valid) {
+        fprintf(stderr, "Bad Arguments");
+        return EXIT_FAILURE;
+    }
 
     /* Listen to server socket */
 
@@ -100,6 +105,8 @@ int main(int argc, char *argv[]) {
     debug("ConcurrencyMode = %s", mode == SINGLE ? "Single" : "Forking");
 
     /* Start either forking or single HTTP server */
+
+
     return status;
 }
 
