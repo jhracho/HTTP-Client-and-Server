@@ -106,6 +106,16 @@ int main(int argc, char *argv[]) {
     debug("ConcurrencyMode = %s", mode == SINGLE ? "Single" : "Forking");
 
     /* Start either forking or single HTTP server */
+    if(mode == SINGLE) {
+        int status = single_server(Port);
+    }
+    else if(mode == FORKING) {
+        int status = forking_server(Port);
+    }
+    else {
+        debug("Mode Unknown");
+        return EXIT_FAILURE;
+    }
     
 
     return status;
