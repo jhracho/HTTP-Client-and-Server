@@ -24,6 +24,10 @@ Enumeration of the contributions of each group member:
 - Spidey: socket.c -- 							Stuart Hayden
 - Spidey: Makefile -- 							Stuart Hayden
 - Spidey: single.c -- 							Jake Hracho
+- Spidey: forking.c -- 							Stuart Hayden
+- Spidey: request.c -- 							Jake Hracho
+- Spidey: handler.c -- 							Stuart Hayden
+- Spidey: utils.c -- 							Stuart Hayden / Jake Hracho
 
 [Final Project]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/project.html
 [CSE 20289 Systems Programming (Spring 2020)]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/
