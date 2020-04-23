@@ -76,14 +76,31 @@ Status  handle_request(Request *r) {
  * with HTTP_STATUS_NOT_FOUND.
  **/
 Status  handle_browse_request(Request *r) {
+    debug("Handling Directory Request");
     struct dirent **entries;
     int n;
 
     /* Open a directory for reading or scanning */
+    n = scandir(r->path, &entries, 0, alphasort);
+    if(n < 0) {
+        debug("Scandir Failed: %s", strerror(errno));
+        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    }
 
     /* Write HTTP Header with OK Status and text/html Content-Type */
+    fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
+    fprintf(r->stream, "Content-Type: text/html\r\n");
+    fprintf(r->stream, "\r\n");
 
     /* For each entry in directory, emit HTML list item */
+    fprintf(r->stream, "<ol>\n");
+    for(int i = 0; i < n; i++) {
+        fprintf(r->stream, "<li>%s</li>\n", entries[i]->d_name);
+        free(entries[i]);
+    }
+    fprintf(r->stream, "</ol>\n");
+
+    free(entries);
 
     /* Return OK */
     return HTTP_STATUS_OK;
@@ -101,24 +118,42 @@ Status  handle_browse_request(Request *r) {
  * HTTP_STATUS_NOT_FOUND.
  **/
 Status  handle_file_request(Request *r) {
+    debug("Handling File Request");
     FILE *fs;
     char buffer[BUFSIZ];
     char *mimetype = NULL;
     size_t nread;
 
     /* Open file for reading */
+    fs = fopen(r->path, "r");      // i think that path is right
+    if(!fs) {
+        goto fail;
+    }
 
     /* Determine mimetype */
 
     /* Write HTTP Headers with OK status and determined Content-Type */
+    fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
+    fprintf(r->stream, "Content-Type: text/html\r\n");
+    fprintf(r->stream, "\r\n");
 
     /* Read from file and write to socket in chunks */
+    nread = fread(buffer, 1, BUFSIZ, fs);
+    while(nread > 0) {
+        fwrite(buffer, 1, nread, r->stream);
+        nread = fread(buffer, 1, BUFSIZ, fs);
+    }
 
     /* Close file, deallocate mimetype, return OK */
+    close(fs);
+    // deallocate mimetype
+
     return HTTP_STATUS_OK;
 
 fail:
     /* Close file, free mimetype, return INTERNAL_SERVER_ERROR */
+    close(fs);
+    // mimetype
     return HTTP_STATUS_INTERNAL_SERVER_ERROR;
 }
 
@@ -140,14 +175,27 @@ Status  handle_cgi_request(Request *r) {
 
     /* Export CGI environment variables from request:
      * http://en.wikipedia.org/wiki/Common_Gateway_Interface */
+    setenv(r->query, , 1); // probably wrong
 
     /* Export CGI environment variables from request headers */
+    
 
     /* POpen CGI Script */
+    pfs = popen(r->path, "r");
+    if(pfs < 0) {
+        pclose(pfs);
+        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    }
 
     /* Copy data from popen to socket */
+    size_t nread = fread(buffer, 1, BUFSIZ, pfs);
+    while(nread > 0) {
+        fwrite(buffer, 1, nread, r->stream);
+        nread = fread(buffer , 1, BUFSIZ, pfs);
+    }
 
     /* Close popen, return OK */
+    pclose(pfs);
     return HTTP_STATUS_OK;
 }
 
