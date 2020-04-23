@@ -7,6 +7,9 @@
 
 #include <unistd.h>
 
+Request * accept_request(int sfd);
+void free_request(Request *r);
+int parse_request(Request *r);
 int parse_request_method(Request *r);
 int parse_request_headers(Request *r);
 

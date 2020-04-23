@@ -87,6 +87,7 @@ bool parse_options(int argc, char *argv[], ServerMode *mode) {
  **/
 int main(int argc, char *argv[]) {
     ServerMode mode;
+    int status = 1;
 
     /* Parse command line options */
     bool valid = parse_options(argc, argv, &mode);
@@ -107,10 +108,10 @@ int main(int argc, char *argv[]) {
 
     /* Start either forking or single HTTP server */
     if(mode == SINGLE) {
-        int status = single_server(Port);
+        status = single_server(server_fd);
     }
     else if(mode == FORKING) {
-        int status = forking_server(Port);
+        status = forking_server(server_fd);
     }
     else {
         debug("Mode Unknown");
