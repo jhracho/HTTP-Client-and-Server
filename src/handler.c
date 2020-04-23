@@ -134,7 +134,7 @@ Status  handle_file_request(Request *r) {
 
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
-    fprintf(r->stream, "Content-Type: text/html\r\n");
+    fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
     fprintf(r->stream, "\r\n");
 
     /* Read from file and write to socket in chunks */

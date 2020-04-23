@@ -39,11 +39,22 @@ char * determine_mimetype(const char *path) {
     FILE *fs = NULL;
 
     /* Find file extension */
+    ext = strchr(path, '.');
+    ext++;
 
     /* Open MimeTypesPath file */
+    fs = fopen(MimeTypesPath);
 
     /* Scan file for matching file extensions */
-    return NULL;
+    while(fgets(buffer, BUFSIZ, fs)){
+        mimetype = strtok(buffer, " ");
+        while (token = strtok(NULL, " ")){
+            if (streq(token, ext))
+                return mimetype;
+        }
+    }
+
+    return DefaultMimeType;
 }
 
 /**
@@ -63,6 +74,8 @@ char * determine_mimetype(const char *path) {
  * string must later be free'd.
  **/
 char * determine_request_path(const char *uri) {
+    // call realpath(3)
+    // Make sure its not equal to rootpath
     return NULL;
 }
 
