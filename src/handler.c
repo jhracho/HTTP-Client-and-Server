@@ -46,13 +46,26 @@ Status  handle_request(Request *r) {
     debug("HTTP REQUEST PATH: %s", r->path);
 
     /* Dispatch to appropriate request handler type based on file type */
+    struct stat s;
+    if (stat(r->path, &s) < 0)
+        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
+
+    if (S_ISDIR(s.st_mode))
+        result = handle_browse_request;
+    
+    else if(access(r->path, R_OK)){
+        if (access(r->path, X_OK)){
+            result = handle_CGI_request(r);
+        else
+            result = handle_file_request(r);
+    }
+
+    else
+        return HTTP_STATUS_NOT_FOUND;
+
     log("HTTP REQUEST STATUS: %s", http_status_string(result));
 
-
-    // If its rx, CGI_request
-    // If its r, File_request
-    // Check with the access system call... use flags to check certain things
-    
+    free(r->path);
     free_request(r);
     return result;
 }
@@ -147,7 +160,6 @@ Status  handle_file_request(Request *r) {
 fail:
     /* Close file, free mimetype, return INTERNAL_SERVER_ERROR */
     close(fs);
-    // mimetype
     free(mimetype);
     return HTTP_STATUS_INTERNAL_SERVER_ERROR;
 }
