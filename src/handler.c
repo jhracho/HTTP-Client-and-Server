@@ -31,37 +31,29 @@ Status  handle_request(Request *r) {
     Status result;
 
     /* Parse request: parse_request_method */
-    char buffer[BUFSIZ];
-    if (fgets(buffer, BUFSIZ, r->stream)){
+    int requestSuccess = parse_request(r);
+    if (requestSuccess == -1 || !method || !uri){
         return HTTP_STATUS_BAD_REQUEST;
     }
-
-    char *method = strtok(buffer ,WHITESPACE);
-    char *uri    = strtok(NULL, WHITESPACE);
-
-    if (!method || !uri){
-        return HTTP_STATUS_BAD_REQUEST;
-    }
-
-    // Parse request: parse_request_headers
-    while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) > 2){
-        debug("Header: %s", buffer);
-    }
-
-    // Handler example
-    fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
-    fprintf(r->stream, "Content-Type: text/html\r\n");
-    fprintf(r->stream, "\r\n");
-
+   
     /* Determine request path */
+    char *path = determine_request_path(r);
+    if (!path)
+        return HTTP_STATUS_BAD_REQUEST;
+    else
+        r->path = strdup(path);
+
     debug("HTTP REQUEST PATH: %s", r->path);
 
     /* Dispatch to appropriate request handler type based on file type */
     log("HTTP REQUEST STATUS: %s", http_status_string(result));
 
+
     // If its rx, CGI_request
     // If its r, File_request
     // Check with the access system call... use flags to check certain things
+    
+    free_request(r);
     return result;
 }
 
