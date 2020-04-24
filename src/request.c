@@ -102,6 +102,13 @@ void free_request(Request *r) {
     free(r->query);
 
     /* Free headers */
+    Header *next;
+    for (Header *curr = r->headers; curr; curr = curr->next){
+        next = curr->next;
+        free(curr->name);
+        free(curr->data);
+        curr = ext;
+    }
     free(r->headers);
 
     /* Free request */
