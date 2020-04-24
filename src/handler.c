@@ -53,14 +53,15 @@ Status  handle_request(Request *r) {
     fprintf(r->stream, "Content-Type: text/html\r\n");
     fprintf(r->stream, "\r\n");
 
-    fprintf(r->stream, "<h1>Sup twitch, last voh! meme review time!</h1>");
-
     /* Determine request path */
     debug("HTTP REQUEST PATH: %s", r->path);
 
     /* Dispatch to appropriate request handler type based on file type */
     log("HTTP REQUEST STATUS: %s", http_status_string(result));
 
+    // If its rx, CGI_request
+    // If its r, File_request
+    // Check with the access system call... use flags to check certain things
     return result;
 }
 
@@ -131,6 +132,7 @@ Status  handle_file_request(Request *r) {
     }
 
     /* Determine mimetype */
+    mimetype = determine_mimetype(r->path);
 
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
@@ -146,7 +148,7 @@ Status  handle_file_request(Request *r) {
 
     /* Close file, deallocate mimetype, return OK */
     close(fs);
-    // deallocate mimetype
+    free(mimetype);
 
     return HTTP_STATUS_OK;
 
@@ -154,6 +156,7 @@ fail:
     /* Close file, free mimetype, return INTERNAL_SERVER_ERROR */
     close(fs);
     // mimetype
+    free(mimetype);
     return HTTP_STATUS_INTERNAL_SERVER_ERROR;
 }
 

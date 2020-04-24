@@ -31,6 +31,8 @@
  *
  * This function returns an allocated string that must be free'd.
  **/
+
+// Use this when its a file request
 char * determine_mimetype(const char *path) {
     char *ext;
     char *mimetype;
@@ -74,9 +76,15 @@ char * determine_mimetype(const char *path) {
  * string must later be free'd.
  **/
 char * determine_request_path(const char *uri) {
-    // call realpath(3)
-    // Make sure its not equal to rootpath
-    return NULL;
+    char buffer[BUFSIZ];
+    sprintf(buffer, "%s/%s", RootPath, uri);
+
+    char bufTwo[BUFSIZ];
+    char *path = strdup(realpath(buffer, bufTwo));
+    
+    if (strncmp(RootPath, path, strlen(RootPath)) != 0)
+        return NULL;
+    return path;
 }
 
 /**
