@@ -53,8 +53,8 @@ Status  handle_request(Request *r) {
     if (S_ISDIR(s.st_mode))
         result = handle_browse_request;
     
-    else if(access(r->path, R_OK)){
-        if (access(r->path, X_OK)){
+    else if(access(r->path, R_OK) == 0){
+        if (access(r->path, X_OK) == 0){
             result = handle_CGI_request(r);
         else
             result = handle_file_request(r);
@@ -182,9 +182,16 @@ Status  handle_cgi_request(Request *r) {
 
     /* Export CGI environment variables from request:
      * http://en.wikipedia.org/wiki/Common_Gateway_Interface */
-    setenv(r->query, , 1); // probably wrong
+    setenv("DOCUMENT_ROOT", RootPath, 1);
+    setenv("QUERY_STRING",r->query, 1);
+    setenv("REMOTE_ADDR", r->host, 1);
+    setenv("REMOTE_PORT", r->port, 1);
+    setenv("REQUEST_METHOD", r->method, 1);
+    setenv("REQUEST_URI", r->uri, 1);
+    setenv("SCRIPT_FILENAME", r->path, 1);
+    setenv("SERVER_PORT", Port, 1);
 
-    /* Export CGI environment variables from request headers */
+/* Export CGI environment variables from request headers */
     
 
     /* POpen CGI Script */
@@ -195,7 +202,7 @@ Status  handle_cgi_request(Request *r) {
     }
 
     /* Copy data from popen to socket */
-    size_t nread = fread(buffer, 1, BUFSIZ, pfs);
+    size_t nread = fread(buffer, 1, BUFSIZ, pfs)ZZ;
     while(nread > 0) {
         fwrite(buffer, 1, nread, r->stream);
         nread = fread(buffer , 1, BUFSIZ, pfs);
