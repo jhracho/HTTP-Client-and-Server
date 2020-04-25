@@ -45,14 +45,16 @@ char * determine_mimetype(const char *path) {
     ext++;
 
     /* Open MimeTypesPath file */
-    fs = fopen(MimeTypesPath);
+    fs = fopen(MimeTypesPath, "r");
 
     /* Scan file for matching file extensions */
     while(fgets(buffer, BUFSIZ, fs)){
         mimetype = strtok(buffer, " ");
-        while (token = strtok(NULL, " ")){
+        token = strtok(NULL, " ");
+        while (token != NULL){
             if (streq(token, ext))
                 return mimetype;
+            token = strtok(NULL, " ");
         }
     }
 
