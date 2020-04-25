@@ -32,10 +32,9 @@ Status  handle_request(Request *r) {
 
     /* Parse request: parse_request_method */
     int requestSuccess = parse_request(r);
-    if (requestSuccess == -1 || !method || !uri){
+    if (requestSuccess == -1 || !method || !uri)
         return HTTP_STATUS_BAD_REQUEST;
-    }
-   
+
     /* Determine request path */
     char *path = determine_request_path(r);
     if (!path)
@@ -47,24 +46,32 @@ Status  handle_request(Request *r) {
 
     /* Dispatch to appropriate request handler type based on file type */
     struct stat s;
-    if (stat(r->path, &s) < 0)
-        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    if (stat(r->path, &s) == 0){
+        if (S_ISDIR(s.st_mode))
+            result = handle_browse_request(r);
 
-    if (S_ISDIR(s.st_mode))
-        result = handle_browse_request;
-    
-    else if(access(r->path, R_OK) == 0){
-        if (access(r->path, X_OK) == 0){
-            result = handle_CGI_request(r);
-        else
-            result = handle_file_request(r);
+        else if(S_ISREG(s.st_mode) && access(r->path, R_OK) == 0){
+            if (access(r->path, X_OK) == 0)
+                result = handle_CGI_request(r);
+            else
+                result = handle_file_request(r);
+        }
     }
 
-    else
-        return HTTP_STATUS_NOT_FOUND;
+    // Checking for stat failure
+    else{
+        result = HTT+STATUS_BAD_REQUEST;
+        handle_error(r, result);
+    }
+
+    // If something goes wrong
+    if (result != HTTP_STATUS_OK)
+        handle_error(r, result);
+
 
     log("HTTP REQUEST STATUS: %s", http_status_string(result));
 
+    // Freeing everything
     free(r->path);
     free_request(r);
     return result;
@@ -193,12 +200,36 @@ Status  handle_cgi_request(Request *r) {
 
     /* Export CGI environment variables from request headers */
     // host, accept, accept-language, accept-encoding, connection, user-agent
-    setenv("HTTP_HOST", r->headers, 1);
-    setenv("HTTP_ACCEPT", r->headers, 1);
-    setenv("HTTP_ACCEPT_LANGUAGE", r->headers, 1);
-    setenv("HTTP_ACCEPT_ENCODING", r->headers, 1);
-    setenv("HTTP_CONNECTION", r->headers, 1);
-    setenv("HTTP_USER_AGENT", r->headers, 1);
+    Header *temp = r->headers->next;
+    if (!temp)
+        return HTTP_STATUS_BAD_REQUEST;
+
+    while (temp){
+        switch (temp->name){
+            case "Host":
+                setenv(HTTP_HOST, temp->data);
+                break;
+            case "Accept":
+                setenv(HTTP_ACCEPT, temp->data);
+                break;
+            case "Accept-Language":
+                setenv(HTTP_ACCEPT_LANGUAGE, temp->data);
+                break;
+            case "Accept-Encoding":
+                setenv(HTTP_ACCEPT_ENCODING, temp->data);
+                break;
+            case "Connection":
+                setenv(HTTP_CONNECTION, temp->data);
+                break;
+            case "User-Agent":
+                setenv(HTTP_USER_AGENT, temp->data);
+                break;
+            default:
+                continue;
+        }
+        temp = temp->next;
+    }
+
 
     /* POpen CGI Script */
     pfs = popen(r->path, "r");
@@ -237,6 +268,10 @@ Status  handle_error(Request *r, Status status) {
     fprintf(r->stream, "\r\n");
 
     /* Write HTML Description of Error*/
+    fprintf(r->stream, "<body>");
+    fprintf(r->stream, "<h1>%s</h1>", status_string);
+    fprintf(r->stream, "<h3>Congrats, you broke our final project.</h3>");
+    fprintf(r->stream, "</body>");
 
     /* Return specified status */
     return status;
