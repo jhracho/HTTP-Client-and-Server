@@ -191,8 +191,14 @@ Status  handle_cgi_request(Request *r) {
     setenv("SCRIPT_FILENAME", r->path, 1);
     setenv("SERVER_PORT", Port, 1);
 
-/* Export CGI environment variables from request headers */
-    
+    /* Export CGI environment variables from request headers */
+    // host, accept, accept-language, accept-encoding, connection, user-agent
+    setenv("HTTP_HOST", r->headers, 1);
+    setenv("HTTP_ACCEPT", r->headers, 1);
+    setenv("HTTP_ACCEPT_LANGUAGE", r->headers, 1);
+    setenv("HTTP_ACCEPT_ENCODING", r->headers, 1);
+    setenv("HTTP_CONNECTION", r->headers, 1);
+    setenv("HTTP_USER_AGENT", r->headers, 1);
 
     /* POpen CGI Script */
     pfs = popen(r->path, "r");
@@ -202,7 +208,7 @@ Status  handle_cgi_request(Request *r) {
     }
 
     /* Copy data from popen to socket */
-    size_t nread = fread(buffer, 1, BUFSIZ, pfs)ZZ;
+    size_t nread = fread(buffer, 1, BUFSIZ, pfs);
     while(nread > 0) {
         fwrite(buffer, 1, nread, r->stream);
         nread = fread(buffer , 1, BUFSIZ, pfs);
@@ -226,6 +232,9 @@ Status  handle_error(Request *r, Status status) {
     const char *status_string = http_status_string(status);
 
     /* Write HTTP Header */
+    fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
+    fprintf(r->stream, "Content-Type: text/html\r\n");
+    fprintf(r->stream, "\r\n");
 
     /* Write HTML Description of Error*/
 
