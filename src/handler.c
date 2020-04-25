@@ -32,11 +32,11 @@ Status  handle_request(Request *r) {
 
     /* Parse request: parse_request_method */
     int requestSuccess = parse_request(r);
-    if (requestSuccess == -1 || !method || !uri)
+    if (requestSuccess == -1 || !r->method || !r->uri)
         return HTTP_STATUS_BAD_REQUEST;
 
     /* Determine request path */
-    char *path = determine_request_path(r);
+    char *path = determine_request_path(r->uri);
     if (!path)
         return HTTP_STATUS_BAD_REQUEST;
     else
@@ -52,7 +52,7 @@ Status  handle_request(Request *r) {
 
         else if(S_ISREG(s.st_mode) && access(r->path, R_OK) == 0){
             if (access(r->path, X_OK) == 0)
-                result = handle_CGI_request(r);
+                result = handle_cgi_request(r);
             else
                 result = handle_file_request(r);
         }
@@ -60,7 +60,7 @@ Status  handle_request(Request *r) {
 
     // Checking for stat failure
     else{
-        result = HTT+STATUS_BAD_REQUEST;
+        result = HTTP_STATUS_BAD_REQUEST;
         handle_error(r, result);
     }
 
@@ -159,14 +159,14 @@ Status  handle_file_request(Request *r) {
     }
 
     /* Close file, deallocate mimetype, return OK */
-    close(fs);
+    fclose(fs);
     free(mimetype);
 
     return HTTP_STATUS_OK;
 
 fail:
     /* Close file, free mimetype, return INTERNAL_SERVER_ERROR */
-    close(fs);
+    fclose(fs);
     free(mimetype);
     return HTTP_STATUS_INTERNAL_SERVER_ERROR;
 }
@@ -200,36 +200,32 @@ Status  handle_cgi_request(Request *r) {
 
     /* Export CGI environment variables from request headers */
     // host, accept, accept-language, accept-encoding, connection, user-agent
-    Header *temp = r->headers->next;
+    Header *temp = r->headers;
     if (!temp)
         return HTTP_STATUS_BAD_REQUEST;
 
-    while (temp){
-        switch (temp->name){
-            case "Host":
-                setenv(HTTP_HOST, temp->data);
-                break;
-            case "Accept":
-                setenv(HTTP_ACCEPT, temp->data);
-                break;
-            case "Accept-Language":
-                setenv(HTTP_ACCEPT_LANGUAGE, temp->data);
-                break;
-            case "Accept-Encoding":
-                setenv(HTTP_ACCEPT_ENCODING, temp->data);
-                break;
-            case "Connection":
-                setenv(HTTP_CONNECTION, temp->data);
-                break;
-            case "User-Agent":
-                setenv(HTTP_USER_AGENT, temp->data);
-                break;
-            default:
-                continue;
+    while(temp) {
+        if(streq(temp->name,      "Host")) {
+            setenv("HTTP_HOST",            temp->data, 1);
         }
+        else if(streq(temp->name, "Accept")) {
+            setenv("HTTP_ACCEPT",          temp->data, 1);
+        }
+        else if(streq(temp->name, "Accept-Language")) {
+            setenv("HTTP_ACCEPT_LANGUAGE", temp->data, 1);
+        }
+        else if(streq(temp->name, "Accept-Encoding")) {
+            setenv("HTTP_ACCEPT_ENCODING", temp->data, 1);
+        }
+        else if(streq(temp->name, "Connection")) {
+            setenv("HTTP_CONNECTION",      temp->data, 1);
+        }
+        else if(streq(temp->name, "User-Agent")) {
+            setenv("HTTP_USER_AGENT",      temp->data, 1);
+        }
+
         temp = temp->next;
     }
-
 
     /* POpen CGI Script */
     pfs = popen(r->path, "r");
