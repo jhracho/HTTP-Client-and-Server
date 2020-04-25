@@ -84,8 +84,10 @@ char * determine_request_path(const char *uri) {
     char bufTwo[BUFSIZ];
     char *path = strdup(realpath(buffer, bufTwo));
     
-    if (strncmp(RootPath, path, strlen(RootPath)) != 0)
+    if (strncmp(RootPath, path, strlen(RootPath)) != 0) {
+        debug("something bad");
         return NULL;
+    }
     return path;
 }
 

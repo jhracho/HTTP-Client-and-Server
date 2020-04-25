@@ -32,15 +32,19 @@ Status  handle_request(Request *r) {
 
     /* Parse request: parse_request_method */
     int requestSuccess = parse_request(r);
-    if (requestSuccess == -1 || !r->method || !r->uri)
+    if (requestSuccess == -1 || !r->method || !r->uri) {
+        debug("Bad request 1");
         return HTTP_STATUS_BAD_REQUEST;
+    }
 
     /* Determine request path */
     char *path = determine_request_path(r->uri);
-    if (!path)
+    if (!path) {
+        debug("Bad request 2");
         return HTTP_STATUS_BAD_REQUEST;
-    else
-        r->path = strdup(path);
+    }
+    
+    r->path = strdup(path);
 
     debug("HTTP REQUEST PATH: %s", r->path);
 

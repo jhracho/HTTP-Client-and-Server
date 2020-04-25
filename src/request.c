@@ -33,10 +33,10 @@ int parse_request_headers(Request *r);
 Request * accept_request(int sfd) {
     Request *r;
     struct sockaddr raddr;
-    socklen_t rlen;
+    socklen_t rlen = sizeof(struct sockaddr);
 
     /* Allocate request struct (zeroed) */
-    r = calloc(1, sizeof(Request *));
+    r = calloc(1, sizeof(Request));
     if (!r){
         debug("Unable to allocate request: %s", strerror(errno));
         goto fail;
@@ -126,12 +126,16 @@ void free_request(Request *r) {
  **/
 int parse_request(Request *r) {
     /* Parse HTTP Request Method */
-    if (parse_request_method(r) == -1)
+    if (parse_request_method(r) == -1) {
+        debug("Parse method fail");
         return -1;
+    }
 
     /* Parse HTTP Requet Headers*/
-    if (parse_request_headers(r) == -1)
+    if (parse_request_headers(r) == -1) {
+        debug("Parse headers fail");
         return -1;
+    }
 
     return 0;
 }
@@ -165,8 +169,10 @@ int parse_request_method(Request *r) {
     /* Parse method and uri */
     method = strtok(buffer, WHITESPACE);
     uri    = strtok(NULL, WHITESPACE);
-    if (!method || !uri)
+    if (!method || !uri) {
+        debug("Method and URI: %s, %s", method, uri);
         return -1;
+    }
 
     /* Parse query from uri */
     query = strchr(uri, '?');
@@ -223,13 +229,19 @@ int parse_request_headers(Request *r) {
     char *data;
 
     /* Parse headers from socket */
-    while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) != 0){
+    while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) > 0){
         // Getting header info
-        chomp(buffer);
+        //chomp(buffer);
+        if(streq(name, "")) {
+            break;
+        }
+
         name = skip_whitespace(buffer);
         data = strchr(name, ':');
-        if (!data)
+        if (!data) {
+            debug("parse headers: data fail: %s\t%s", name, data);
             return -1;
+        }
         else
             *data++ = '\0';
         data = skip_whitespace(data);
