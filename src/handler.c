@@ -34,14 +34,17 @@ Status  handle_request(Request *r) {
     int requestSuccess = parse_request(r);
     if (requestSuccess == -1 || !r->method || !r->uri) {
         debug("Bad request 1");
-        return HTTP_STATUS_BAD_REQUEST;
+        result = HTTP_STATUS_BAD_REQUEST;
+        return result;
+      //  handle_error(r, result);
     }
 
     /* Determine request path */
     char *path = determine_request_path(r->uri);
     if (!path) {
         debug("Bad request 2");
-        return HTTP_STATUS_BAD_REQUEST;
+        result = HTTP_STATUS_BAD_REQUEST;
+     //   handle_error(r, result);
     }
     
     r->path = strdup(path);

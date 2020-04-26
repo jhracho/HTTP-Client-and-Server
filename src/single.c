@@ -15,6 +15,7 @@
  **/
 int single_server(int sfd) {
     /* Accept and handle HTTP request */
+    Status result;
     while (true) {
     	/* Accept request */
         Request *request = accept_request(sfd);
@@ -25,7 +26,10 @@ int single_server(int sfd) {
         }
 
 	/* Handle request */
-        handle_request(request);
+        result = handle_request(request);
+        if (result != HTTP_STATUS_OK){
+            break;
+        }
 
 	/* Free request */
         free_request(request);
