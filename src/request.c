@@ -103,7 +103,9 @@ void free_request(Request *r) {
 
     /* Free headers */
     Header *next;
-    for (Header *curr = r->headers; curr; curr = curr->next){
+//    for (Header *curr = r->headers; curr;curr = curr->next;){
+    Header *curr = r->headers;
+    while(curr) {
         next = curr->next;
         free(curr->name);
         free(curr->data);
@@ -168,6 +170,7 @@ int parse_request_method(Request *r) {
 
     /* Parse method and uri */
     method = strtok(buffer, WHITESPACE);
+    debug("Buffer and method: %s, %s", buffer, method);
     uri    = strtok(NULL, WHITESPACE);
     if (!method || !uri) {
         debug("Method and URI: %s, %s", method, uri);
@@ -232,14 +235,14 @@ int parse_request_headers(Request *r) {
     while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) > 0){
         // Getting header info
         //chomp(buffer);
-        if(streq(name, "")) {
+        if(streq(buffer, "")) {
             break;
         }
 
         name = skip_whitespace(buffer);
         data = strchr(name, ':');
         if (!data) {
-            debug("parse headers: data fail: %s\t%s", name, data);
+            debug("parse headers: data fail: name:%s, data:%s", name, data);
             return -1;
         }
         else

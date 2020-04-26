@@ -76,7 +76,6 @@ Status  handle_request(Request *r) {
     log("HTTP REQUEST STATUS: %s", http_status_string(result));
 
     // Freeing everything
-    free(r->path);
     free_request(r);
     return result;
 }
