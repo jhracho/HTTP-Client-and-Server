@@ -139,6 +139,9 @@ int parse_request(Request *r) {
         return -1;
     }
 
+    debug("Request Struct");
+    debug("Method");
+
     return 0;
 }
 
