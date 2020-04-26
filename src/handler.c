@@ -79,7 +79,6 @@ Status  handle_request(Request *r) {
     log("HTTP REQUEST STATUS: %s", http_status_string(result));
 
     // Freeing everything
-    free_request(r);
     return result;
 }
 
@@ -112,22 +111,19 @@ Status  handle_browse_request(Request *r) {
     fprintf(r->stream, "\r\n");
 
     /* For each entry in directory, emit HTML list item */
-    fprintf(r->stream, "<ol>\n");
+    fprintf(r->stream, "<ul>\n");
     for(int i = 0; i < n; i++) {
         if (streq(entries[i]->d_name, "."))
             continue;
+
         fprintf(r->stream, "<li>");
-
-        //fprintf(r->stream, "<a href=\"%s/%s\">", r->path, entries[i]->d_name);
-
+        fprintf(r->stream, "<a href=\"%s\">", entries[i]->d_name);
         fprintf(r->stream, "%s", entries[i]->d_name);
-
-        //fprintf(r->stream, "</a>");
-
+        fprintf(r->stream, "</a>");
         fprintf(r->stream, "</li>\n");
         free(entries[i]);
     }
-    fprintf(r->stream, "</ol>\n");
+    fprintf(r->stream, "</ul>\n");
 
     free(entries);
 
@@ -154,9 +150,11 @@ Status  handle_file_request(Request *r) {
     size_t nread;
 
     /* Open file for reading */
-    fs = fopen(r->path, "r");      // i think that path is right
+    fs = fopen(r->path, "r");
     if(!fs) {
-        goto fail;
+        fclose(fs);
+        //free(mimetype);
+        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
     }
 
     /* Determine mimetype */
@@ -167,6 +165,7 @@ Status  handle_file_request(Request *r) {
     fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
     fprintf(r->stream, "\r\n");
 
+
     /* Read from file and write to socket in chunks */
     nread = fread(buffer, 1, BUFSIZ, fs);
     while(nread > 0) {
@@ -176,15 +175,8 @@ Status  handle_file_request(Request *r) {
 
     /* Close file, deallocate mimetype, return OK */
     fclose(fs);
-    free(mimetype);
 
     return HTTP_STATUS_OK;
-
-fail:
-    /* Close file, free mimetype, return INTERNAL_SERVER_ERROR */
-    fclose(fs);
-    free(mimetype);
-    return HTTP_STATUS_INTERNAL_SERVER_ERROR;
 }
 
 /**

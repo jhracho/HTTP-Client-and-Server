@@ -105,14 +105,12 @@ void free_request(Request *r) {
     Header *next;
 //    for (Header *curr = r->headers; curr;curr = curr->next;){
     Header *curr = r->headers;
-    debug("starting headers");
     while(curr) {
         next = curr->next;
         free(curr->name);
         free(curr->data);
         curr = next;
     }
-    debug("done with headers?");
     //free(r->headers);
 
     /* Free request */
@@ -234,7 +232,7 @@ int parse_request_headers(Request *r) {
     char *data;
 
     /* Parse headers from socket */
-    while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) > 0){
+    while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) > 2){
         // Getting header info
         chomp(buffer);
         //if(streq(buffer, "")) {
@@ -246,10 +244,8 @@ int parse_request_headers(Request *r) {
         data = strchr(name, ':');
        
         if (!data) {
-            //debug("!data triggered in parse_request_headers: name:%s, data:%s", name, data);
-            //return -1;
-            //log("Parsing Headers Complete");
-            break;
+            debug("!data triggered in parse_request_headers: name:%s, data:%s", name, data);
+            return -1;
         }
         
         *data++ = '\0';
@@ -268,7 +264,7 @@ int parse_request_headers(Request *r) {
         r->headers = curr;
     }
 
-/*#ifndef NDEBUG
+/*ifndef NDEBUG
     for (Header *header = r->headers; header; header = header->next) {
     	debug("HTTP HEADER %s = %s", header->name, header->data);
     }
