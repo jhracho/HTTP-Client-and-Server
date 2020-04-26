@@ -43,6 +43,10 @@ int socket_listen(const char *port) {
             continue;
         }
 
+        // Setsockopt
+        int optval = 1;
+        setsockopt(socket_fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+
 	/* Bind socket */
         if(bind(socket_fd, p->ai_addr, p->ai_addrlen) <0) {
             close(socket_fd);

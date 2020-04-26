@@ -90,10 +90,10 @@ void free_request(Request *r) {
     }
 
     /* Close socket or fd */
-    if (r->fd)
-        close(r->fd);
-    else
+    if (r->stream)
         fclose(r->stream);
+    else if (r->fd >= 0)
+        close(r->fd);
 
     /* Free allocated strings */
     free(r->method);
@@ -111,7 +111,7 @@ void free_request(Request *r) {
         free(curr->data);
         curr = next;
     }
-    free(r->headers);
+    //free(r->headers);
 
     /* Free request */
     free(r);
