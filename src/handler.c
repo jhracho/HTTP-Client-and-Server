@@ -114,6 +114,8 @@ Status  handle_browse_request(Request *r) {
     /* For each entry in directory, emit HTML list item */
     fprintf(r->stream, "<ol>\n");
     for(int i = 0; i < n; i++) {
+        if (streq(entries[i]->d_name, "."))
+            continue;
         fprintf(r->stream, "<li>%s</li>\n", entries[i]->d_name);
         free(entries[i]);
     }
