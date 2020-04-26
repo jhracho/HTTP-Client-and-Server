@@ -82,10 +82,10 @@ char * determine_request_path(const char *uri) {
     sprintf(buffer, "%s/%s", RootPath, uri);
 
     char bufTwo[BUFSIZ];
-    char *path = strdup(realpath(buffer, bufTwo));
-    
+    char *path = realpath(buffer, bufTwo);
+        
     if (strncmp(RootPath, path, strlen(RootPath)) != 0) {
-        debug("something bad");
+        debug("Real path does not start with root");
         return NULL;
     }
     return path;
