@@ -115,7 +115,8 @@ Status  handle_browse_request(Request *r) {
     for(int i = 0; i < n; i++) {
         if (streq(entries[i]->d_name, "."))
             continue;
-
+        
+        debug("Work path: %s", r->path);
         fprintf(r->stream, "<li>");
         fprintf(r->stream, "<a href=\"%s\">", entries[i]->d_name);
         fprintf(r->stream, "%s", entries[i]->d_name);
