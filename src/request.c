@@ -105,12 +105,14 @@ void free_request(Request *r) {
     Header *next;
 //    for (Header *curr = r->headers; curr;curr = curr->next;){
     Header *curr = r->headers;
+    debug("starting headers");
     while(curr) {
         next = curr->next;
         free(curr->name);
         free(curr->data);
         curr = next;
     }
+    debug("done with headers?");
     //free(r->headers);
 
     /* Free request */
@@ -170,10 +172,10 @@ int parse_request_method(Request *r) {
 
     /* Parse method and uri */
     method = strtok(buffer, WHITESPACE);
-    debug("Buffer and method: %s, %s", buffer, method);
+    //debug("Buffer and method: %s, %s", buffer, method);
     uri    = strtok(NULL, WHITESPACE);
     if (!method || !uri) {
-        debug("Method and URI: %s, %s", method, uri);
+        //debug("Method and URI: %s, %s", method, uri);
         return -1;
     }
 
@@ -246,7 +248,7 @@ int parse_request_headers(Request *r) {
         if (!data) {
             //debug("!data triggered in parse_request_headers: name:%s, data:%s", name, data);
             //return -1;
-            log("Parsing Headers Complete");
+            //log("Parsing Headers Complete");
             break;
         }
         
@@ -266,11 +268,11 @@ int parse_request_headers(Request *r) {
         r->headers = curr;
     }
 
-#ifndef NDEBUG
+/*#ifndef NDEBUG
     for (Header *header = r->headers; header; header = header->next) {
     	debug("HTTP HEADER %s = %s", header->name, header->data);
     }
-#endif
+#endif*/
     return 0;
 }
 

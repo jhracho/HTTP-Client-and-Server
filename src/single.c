@@ -32,7 +32,10 @@ int single_server(int sfd) {
         }
 
 	/* Free request */
+        log("Freeing process");
         free_request(request);
+
+        log("Process ended");
     }
 
     /* Close server socket */

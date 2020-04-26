@@ -116,7 +116,15 @@ Status  handle_browse_request(Request *r) {
     for(int i = 0; i < n; i++) {
         if (streq(entries[i]->d_name, "."))
             continue;
-        fprintf(r->stream, "<li>%s</li>\n", entries[i]->d_name);
+        fprintf(r->stream, "<li>");
+
+        //fprintf(r->stream, "<a href=\"%s/%s\">", r->path, entries[i]->d_name);
+
+        fprintf(r->stream, "%s", entries[i]->d_name);
+
+        //fprintf(r->stream, "</a>");
+
+        fprintf(r->stream, "</li>\n");
         free(entries[i]);
     }
     fprintf(r->stream, "</ol>\n");
