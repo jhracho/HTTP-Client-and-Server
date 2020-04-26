@@ -21,14 +21,14 @@ int single_server(int sfd) {
         Request *request = accept_request(sfd);
         if (!request){
             log("Unable to accept request: %s", strerror(errno));
-            //continue;
-            break;
+            continue;
         }
 
 	/* Handle request */
         result = handle_request(request);
         if (result != HTTP_STATUS_OK){
-            break;
+            log("Unable to handle request: %s", strerror(errno));
+            continue;
         }
 
 	/* Free request */
