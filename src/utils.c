@@ -88,6 +88,7 @@ char * determine_request_path(const char *uri) {
         debug("Real path does not start with root");
         return NULL;
     }
+    
     return path;
 }
 
