@@ -98,6 +98,10 @@ int main(int argc, char *argv[]) {
 
     /* Listen to server socket */
     int server_fd = socket_listen(Port);
+    if (server_fd < 0){
+        debug("socket_listen: FAILURE");
+        return EXIT_FAILURE;
+    }
 
     /* Determine real RootPath */
     log("Listening on port %s", Port);
