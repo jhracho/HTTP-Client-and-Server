@@ -234,23 +234,26 @@ int parse_request_headers(Request *r) {
     /* Parse headers from socket */
     while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) > 0){
         // Getting header info
-        //chomp(buffer);
+        chomp(buffer);
         if(streq(buffer, "")) {
             break;
         }
-
+        
         name = skip_whitespace(buffer);
+        //debug("Header after whitespace:%s", name);
         data = strchr(name, ':');
+       
         if (!data) {
-            debug("parse headers: data fail: name:%s, data:%s", name, data);
+            debug("!data triggered in parse_request_headers: name:%s, data:%s", name, data);
             return -1;
         }
-        else
-            *data++ = '\0';
-        data = skip_whitespace(data);
         
+        *data++ = '\0';
+        data = skip_whitespace(data);
+        debug("FINAL NAME:%s   FINAL DATA:%s", name, data);
+
         // Allocating Header
-        curr = malloc(sizeof(Header));
+        curr = calloc(1, sizeof(Header));
         if (!curr)
             return -1;
 
