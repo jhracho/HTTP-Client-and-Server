@@ -42,6 +42,9 @@ char * determine_mimetype(const char *path) {
 
     /* Find file extension */
     ext = strchr(path, '.');
+    if (!ext)
+        return DefaultMimeType;
+
     ext++;
 
     /* Open MimeTypesPath file */
@@ -114,7 +117,7 @@ const char * http_status_string(Status status) {
         "500 Internal Server Error",
         "418 I'm A Teapot",
     };
-    if (status > 3)
+    if (status > 5)
         return NULL;
 
     return StatusStrings[status];
