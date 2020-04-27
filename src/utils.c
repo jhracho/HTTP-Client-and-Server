@@ -52,6 +52,7 @@ char * determine_mimetype(const char *path) {
         mimetype = strtok(buffer, " ");
         token = strtok(NULL, " ");
         while (token != NULL){
+            debug("Token: %s \t Ext: %s", token, ext);
             if (streq(token, ext))
                 return mimetype;
             token = strtok(NULL, " ");

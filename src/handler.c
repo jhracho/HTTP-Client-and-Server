@@ -162,10 +162,10 @@ Status  handle_file_request(Request *r) {
         //free(mimetype);
         return HTTP_STATUS_INTERNAL_SERVER_ERROR;
     }
-
+    
     /* Determine mimetype */
     mimetype = determine_mimetype(r->path);
-
+    debug("Mimetype: %s", mimetype);
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
     fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
