@@ -49,13 +49,18 @@ char * determine_mimetype(const char *path) {
 
     /* Scan file for matching file extensions */
     while(fgets(buffer, BUFSIZ, fs)){
-        mimetype = strtok(buffer, " ");
-        token = strtok(NULL, " ");
-        while (token != NULL){
-            debug("Token: %s \t Ext: %s", token, ext);
-            if (streq(token, ext))
-                return mimetype;
-            token = strtok(NULL, " ");
+        chomp(buffer);
+        if (strncmp(buffer, "#", 1) == 0 || strncmp(buffer, "", 1) == 0)
+            continue;
+        else{
+            mimetype = strtok(buffer, WHITESPACE);
+            token = strtok(NULL, WHITESPACE);
+            while (token != NULL){
+                if (streq(token, ext)){
+                    return mimetype;
+                }
+                token = strtok(NULL, " ");
+            }
         }
     }
 
