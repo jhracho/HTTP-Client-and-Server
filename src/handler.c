@@ -118,7 +118,12 @@ Status  handle_browse_request(Request *r) {
         
         debug("Work path: %s", r->path);
         fprintf(r->stream, "<li>");
-        fprintf(r->stream, "<a href=\"%s\">", entries[i]->d_name);
+
+        if (!streq(r->uri, "/"))
+            fprintf(r->stream, "<a href=\"%s/%s\">", r->uri, entries[i]->d_name);
+        else
+            fprintf(r->stream, "<a href=\"%s\">", entries[i]->d_name);
+
         fprintf(r->stream, "%s", entries[i]->d_name);
         fprintf(r->stream, "</a>");
         fprintf(r->stream, "</li>\n");
@@ -157,10 +162,10 @@ Status  handle_file_request(Request *r) {
         //free(mimetype);
         return HTTP_STATUS_INTERNAL_SERVER_ERROR;
     }
-
+    
     /* Determine mimetype */
     mimetype = determine_mimetype(r->path);
-
+    debug("Mimetype: %s", mimetype);
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
     fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
