@@ -262,7 +262,9 @@ int parse_request_headers(Request *r) {
         curr->data = strdup(data);
         curr->next = r->headers;
         r->headers = curr;
+
     }
+
 
 /*ifndef NDEBUG
     for (Header *header = r->headers; header; header = header->next) {

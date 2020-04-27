@@ -38,14 +38,12 @@ Status  handle_request(Request *r) {
     }
 
     /* Determine request path */
-    char *path = determine_request_path(r->uri);
-    if (!path) {
+    r->path = determine_request_path(r->uri);
+    if (!r->path) {
         debug("Bad request 2");
         handle_error(r, HTTP_STATUS_BAD_REQUEST);
     }
     
-    r->path = strdup(path);
-
     debug("HTTP REQUEST PATH: %s", r->path);
 
     /* Dispatch to appropriate request handler type based on file type */
@@ -147,10 +145,10 @@ Status  handle_browse_request(Request *r) {
  **/
 Status  handle_file_request(Request *r) {
     debug("Handling File Request");
-    FILE *fs;
+    FILE *fs = NULL;
     char buffer[BUFSIZ];
     char *mimetype = NULL;
-    size_t nread;
+    size_t nread = 0;
 
     /* Open file for reading */
     fs = fopen(r->path, "r");
@@ -162,7 +160,7 @@ Status  handle_file_request(Request *r) {
     
     /* Determine mimetype */
     mimetype = determine_mimetype(r->path);
-    debug("Mimetype: %s", mimetype);
+    //debug("Mimetype: %s", mimetype);
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
     fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
@@ -240,6 +238,9 @@ Status  handle_cgi_request(Request *r) {
     }
 
     /* POpen CGI Script */
+    if(!r->path) {
+        return handle_error(r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
+    }
     pfs = popen(r->path, "r");
     if(pfs < 0) {
         pclose(pfs);
