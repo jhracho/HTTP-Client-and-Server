@@ -96,7 +96,6 @@ def main():
         usage(1)
 
     # Create pool of workers and perform throws
-    # TODO: I tried making this similar to HW6 but i am going to OH later to clarify
     avgTimes = []
     args = ((url, throws, verbose, hid) for hid in range(hammers))
     with concurrent.futures.ProcessPoolExecutor(hammers) as executor:
