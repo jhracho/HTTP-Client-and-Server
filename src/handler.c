@@ -34,17 +34,14 @@ Status  handle_request(Request *r) {
     int requestSuccess = parse_request(r);
     if (requestSuccess == -1 || !r->method || !r->uri) {
         debug("Bad request 1");
-        result = HTTP_STATUS_BAD_REQUEST;
-        return result;
-        handle_error(r, result);
+        return handle_error(r, HTTP_STATUS_BAD_REQUEST);
     }
 
     /* Determine request path */
     char *path = determine_request_path(r->uri);
     if (!path) {
         debug("Bad request 2");
-        result = HTTP_STATUS_BAD_REQUEST;
-        handle_error(r, result);
+        handle_error(r, HTTP_STATUS_BAD_REQUEST);
     }
     
     r->path = strdup(path);
@@ -160,7 +157,7 @@ Status  handle_file_request(Request *r) {
     if(!fs) {
         fclose(fs);
         //free(mimetype);
-        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
+        return handle_error, (r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
     }
     
     /* Determine mimetype */
@@ -246,7 +243,7 @@ Status  handle_cgi_request(Request *r) {
     pfs = popen(r->path, "r");
     if(pfs < 0) {
         pclose(pfs);
-        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
+        return handle_error(r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
     }
 
     /* Copy data from popen to socket */
