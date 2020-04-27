@@ -36,7 +36,7 @@ Status  handle_request(Request *r) {
         debug("Bad request 1");
         result = HTTP_STATUS_BAD_REQUEST;
         return result;
-      //  handle_error(r, result);
+        handle_error(r, result);
     }
 
     /* Determine request path */
@@ -44,7 +44,7 @@ Status  handle_request(Request *r) {
     if (!path) {
         debug("Bad request 2");
         result = HTTP_STATUS_BAD_REQUEST;
-     //   handle_error(r, result);
+        handle_error(r, result);
     }
     
     r->path = strdup(path);
@@ -68,12 +68,12 @@ Status  handle_request(Request *r) {
     // Checking for stat failure
     else{
         result = HTTP_STATUS_BAD_REQUEST;
-        handle_error(r, result);
+        return handle_error(r, result);
     }
 
     // If something goes wrong
     if (result != HTTP_STATUS_OK)
-        handle_error(r, result);
+        return handle_error(r, result);
 
 
     log("HTTP REQUEST STATUS: %s", http_status_string(result));
@@ -102,7 +102,7 @@ Status  handle_browse_request(Request *r) {
     n = scandir(r->path, &entries, 0, alphasort);
     if(n < 0) {
         debug("Scandir Failed: %s", strerror(errno));
-        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
+        return handle_error(r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
     }
 
     /* Write HTTP Header with OK Status and text/html Content-Type */
@@ -169,7 +169,7 @@ Status  handle_file_request(Request *r) {
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
     fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
-    fprintf(r->stream, "Content-Type: text/html\r\n");
+   // fprintf(r->stream, "Content-Type: text/html\r\n");
     fprintf(r->stream, "\r\n");
 
 
@@ -272,6 +272,8 @@ Status  handle_cgi_request(Request *r) {
  **/
 Status  handle_error(Request *r, Status status) {
     const char *status_string = http_status_string(status);
+    debug("Reached handle_error");
+    debug("%p", r->stream);
 
     /* Write HTTP Header */
     fprintf(r->stream, "HTTP/1.0 %s\r\n", status_string);
@@ -279,10 +281,10 @@ Status  handle_error(Request *r, Status status) {
     fprintf(r->stream, "\r\n");
 
     /* Write HTML Description of Error*/
-    fprintf(r->stream, "<body>");
-    fprintf(r->stream, "<h1>%s</h1>", status_string);
-    fprintf(r->stream, "<h3>Congrats, you broke our final project.</h3>");
-    fprintf(r->stream, "</body>");
+    fprintf(r->stream, "<body>\n");
+    fprintf(r->stream, "<h1>%s</h1>\n", status_string);
+    fprintf(r->stream, "<h3>Congrats, you broke our final project.</h3>\n");
+    fprintf(r->stream, "</body>\n");
 
     /* Return specified status */
     return status;
