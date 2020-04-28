@@ -287,7 +287,24 @@ Status  handle_error(Request *r, Status status) {
     /* Write HTML Description of Error*/
     fprintf(r->stream, "<body>\n");
     fprintf(r->stream, "<h1>%s</h1>\n", status_string);
-    fprintf(r->stream, "<h3>Congrats, you broke our final project.</h3>\n");
+    
+    /* Print Images */
+    if(status == HTTP_STATUS_BAD_REQUEST) {
+        // 400 Bad Request
+        fprintf(r->stream, "<h2>Not really sure what you did to get here but good job.</h2>\n");
+        fprintf(r->stream, "<center><img src=\"https://i.imgur.com/GpY6bTJ.png\"></center>\n");
+    }
+    else if(status == HTTP_STATUS_NOT_FOUND) {
+        // 404 Not Found
+        fprintf(r->stream, "<h2>Whatcha looking for?</h2>\n");
+        fprintf(r->stream, "<center><img src=\"https://i.imgflip.com/11fjj7.jpg\"></center>\n");
+    }
+    else {
+        // 500 Internal Server Error
+        fprintf(r->stream, "<h2>Something broke. Please don\'t take off points. ;)</h2>\n");
+        fprintf(r->stream, "<center><img src=\"https://i.chzbgr.com/full/1999218944/h369E3AB7/500-internal-server-error\"></center>\n");
+    }
+
     fprintf(r->stream, "</body>\n");
 
     /* Return specified status */
