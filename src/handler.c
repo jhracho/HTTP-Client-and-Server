@@ -113,18 +113,13 @@ Status  handle_browse_request(Request *r) {
             continue;
         }
         
-        //fprintf(r->stream, "<html>");
-        //fprintf(r->stream, "<head></head>");
-        //fprintf(r->stream, "<body>");
         fprintf(r->stream, "<html>\n<head></head>\n<body>\n<li>\n");
-        //fprintf(r->stream, "<li>");
         if(streq(r->uri, "/")) {
             fprintf(r->stream, "<a href=\"/%s\">", entries[i]->d_name);
         }
         else {
             fprintf(r->stream, "<a href=\"%s/%s\">", r->uri, entries[i]->d_name);
         }
-        //fprintf(r->stream, "<a href=\"%s/%s\">", r->uri, entries[i]->d_name);
         fprintf(r->stream, "%s", entries[i]->d_name);
         fprintf(r->stream, "</a>\n");
         fprintf(r->stream, "</li>\n");
