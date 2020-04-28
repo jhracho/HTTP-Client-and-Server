@@ -160,18 +160,15 @@ Status  handle_file_request(Request *r) {
     fs = fopen(r->path, "r");
     if(!fs) {
         fclose(fs);
-        //free(mimetype);
         return handle_error(r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
     }
     
     /* Determine mimetype */
     mimetype = determine_mimetype(r->path);
     if(!mimetype) {
-        //return handle_error(r, HTTP_STATUS_BAD_REQUEST);
         debug("no mimetype");
     }
         
-    //debug("Mimetype: %s", mimetype);
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
     fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
@@ -225,12 +222,13 @@ Status  handle_cgi_request(Request *r) {
     if (!temp)
         return handle_error(r, HTTP_STATUS_BAD_REQUEST);
 
+    // Iterates through headers, setenv'ing when necessary
     while(temp) {
-        if(streq(temp->name,      "Host")) {
-            setenv("HTTP_HOST",            temp->data, 1);
+        if(streq(temp->name, "Host")) {
+            setenv("HTTP_HOST", temp->data, 1);
         }
         else if(streq(temp->name, "Accept")) {
-            setenv("HTTP_ACCEPT",          temp->data, 1);
+            setenv("HTTP_ACCEPT", temp->data, 1);
         }
         else if(streq(temp->name, "Accept-Language")) {
             setenv("HTTP_ACCEPT_LANGUAGE", temp->data, 1);
@@ -239,12 +237,13 @@ Status  handle_cgi_request(Request *r) {
             setenv("HTTP_ACCEPT_ENCODING", temp->data, 1);
         }
         else if(streq(temp->name, "Connection")) {
-            setenv("HTTP_CONNECTION",      temp->data, 1);
+            setenv("HTTP_CONNECTION", temp->data, 1);
         }
         else if(streq(temp->name, "User-Agent")) {
-            setenv("HTTP_USER_AGENT",      temp->data, 1);
+            setenv("HTTP_USER_AGENT", temp->data, 1);
         }
-
+        
+        // Advances pointer
         temp = temp->next;
     }
 
@@ -252,6 +251,8 @@ Status  handle_cgi_request(Request *r) {
     if(!r->path) {
         return handle_error(r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
     }
+
+    // Checking for failure
     pfs = popen(r->path, "r");
     if(pfs < 0) {
         pclose(pfs);
@@ -280,9 +281,8 @@ Status  handle_cgi_request(Request *r) {
  * notify the user of the error.
  **/
 Status  handle_error(Request *r, Status status) {
+    // Gets error string
     const char *status_string = http_status_string(status);
-    debug("Reached handle_error");
-    debug("%p", r->stream);
 
     /* Write HTTP Header */
     fprintf(r->stream, "HTTP/1.0 %s\r\n", status_string);
