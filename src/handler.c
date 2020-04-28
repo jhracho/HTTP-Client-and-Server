@@ -41,7 +41,7 @@ Status  handle_request(Request *r) {
     r->path = determine_request_path(r->uri);
     if (!r->path) {
         debug("Bad request 2");
-        handle_error(r, HTTP_STATUS_BAD_REQUEST);
+        return handle_error(r, HTTP_STATUS_BAD_REQUEST);
     }
     
     debug("HTTP REQUEST PATH: %s", r->path);
@@ -287,6 +287,7 @@ Status  handle_error(Request *r, Status status) {
     fprintf(r->stream, "</body>\n");
 
     /* Return specified status */
+    fflush(r->stream);
     return status;
 }
 
