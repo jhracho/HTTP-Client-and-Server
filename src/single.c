@@ -28,7 +28,6 @@ int single_server(int sfd) {
         result = handle_request(request);
         if (result != HTTP_STATUS_OK){
             log("Unable to handle request: %s", strerror(errno));
-            continue;
         }
 
 	/* Free request */
