@@ -157,7 +157,7 @@ Status  handle_file_request(Request *r) {
     if(!fs) {
         fclose(fs);
         //free(mimetype);
-        return handle_error, (r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        return handle_error(r, HTTP_STATUS_INTERNAL_SERVER_ERROR);
     }
     
     /* Determine mimetype */
