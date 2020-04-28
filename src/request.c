@@ -109,6 +109,9 @@ void free_request(Request *r) {
         next = curr->next;
         free(curr->name);
         free(curr->data);
+
+        free(curr);
+
         curr = next;
     }
     //free(r->headers);
@@ -161,9 +164,9 @@ int parse_request(Request *r) {
  **/
 int parse_request_method(Request *r) {
     char buffer[BUFSIZ];
-    char *method;
-    char *uri;
-    char *query;
+    char *method = NULL;
+    char *uri = NULL;
+    char *query = NULL;
 
     /* Read line from socket */
     fgets(buffer, BUFSIZ, r->stream);
@@ -187,8 +190,7 @@ int parse_request_method(Request *r) {
     /* Record method, uri, and query in request struct */
     r->method = strdup(method);
     r->uri    = strdup(uri);
-    if (strcmp(query, "") != 0)
-        r->query = strdup(query);
+    r->query = strdup(query);
 
     // Debugging
     debug("HTTP METHOD: %s", r->method);
@@ -253,7 +255,7 @@ int parse_request_headers(Request *r) {
         //debug("FINAL NAME:%s   FINAL DATA:%s", name, data);
 
         // Allocating Header
-        curr = calloc(1, sizeof(Header));
+        curr = malloc(sizeof(Header));
         if (!curr)
             return -1;
 
@@ -262,7 +264,6 @@ int parse_request_headers(Request *r) {
         curr->data = strdup(data);
         curr->next = r->headers;
         r->headers = curr;
-
     }
 
 

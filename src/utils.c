@@ -43,7 +43,7 @@ char * determine_mimetype(const char *path) {
     /* Find file extension */
     ext = strchr(path, '.');
     if (!ext)
-        return DefaultMimeType;
+        return strdup(DefaultMimeType);
 
     ext++;
 
@@ -60,14 +60,14 @@ char * determine_mimetype(const char *path) {
             token = strtok(NULL, WHITESPACE);
             while (token != NULL){
                 if (streq(token, ext)){
-                    return mimetype;
+                    return strdup(mimetype);
                 }
                 token = strtok(NULL, " ");
             }
         }
     }
 
-    return DefaultMimeType;
+    return strdup(DefaultMimeType);
 }
 
 /**
