@@ -286,10 +286,7 @@ Status  handle_error(Request *r, Status status) {
     fprintf(r->stream, "<h3>Congrats, you broke our final project.</h3>\n");
     fprintf(r->stream, "</body>\n");
 
-    //fflush(r->stream);
-
     /* Return specified status */
-    fflush(r->stream);
     return status;
 }
 
