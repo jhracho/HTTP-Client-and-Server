@@ -31,7 +31,7 @@ int parse_request_headers(Request *r);
  * The returned request struct must be deallocated using free_request.
  **/
 Request * accept_request(int sfd) {
-    //Request *r;
+    // Initializing socket struct
     struct sockaddr raddr;
     socklen_t rlen = sizeof(struct sockaddr);
 
@@ -63,6 +63,7 @@ Request * accept_request(int sfd) {
         goto fail;        
     }
 
+    // Successful request!
     log("Accepted request from %s:%s", r->host, r->port);
     return r;
 
@@ -85,6 +86,7 @@ fail:
  *  4. Frees request struct.
  **/
 void free_request(Request *r) {
+    // Protection for if a request doesnt exist
     if (!r) {
     	return;
     }
@@ -103,7 +105,6 @@ void free_request(Request *r) {
 
     /* Free headers */
     Header *next;
-//    for (Header *curr = r->headers; curr;curr = curr->next;){
     Header *curr = r->headers;
     while(curr) {
         next = curr->next;
@@ -114,7 +115,6 @@ void free_request(Request *r) {
 
         curr = next;
     }
-    //free(r->headers);
 
     /* Free request */
     free(r);
@@ -173,10 +173,8 @@ int parse_request_method(Request *r) {
 
     /* Parse method and uri */
     method = strtok(buffer, WHITESPACE);
-    //debug("Buffer and method: %s, %s", buffer, method);
     uri    = strtok(NULL, WHITESPACE);
     if (!method || !uri) {
-        //debug("Method and URI: %s, %s", method, uri);
         return -1;
     }
 
@@ -237,12 +235,7 @@ int parse_request_headers(Request *r) {
     while (fgets(buffer, BUFSIZ, r->stream) && strlen(buffer) > 2){
         // Getting header info
         chomp(buffer);
-        //if(streq(buffer, "")) {
-            //break;
-        //}
-        
         name = skip_whitespace(buffer);
-        //debug("Header after whitespace:%s", name);
         data = strchr(name, ':');
        
         if (!data) {
@@ -250,9 +243,9 @@ int parse_request_headers(Request *r) {
             return -1;
         }
         
+        // Advancing pointer and stuff to .split the line
         *data++ = '\0';
         data = skip_whitespace(data);
-        //debug("FINAL NAME:%s   FINAL DATA:%s", name, data);
 
         // Allocating Header
         curr = malloc(sizeof(Header));
@@ -267,11 +260,11 @@ int parse_request_headers(Request *r) {
     }
 
 
-/*ifndef NDEBUG
+#ifndef NDEBUG
     for (Header *header = r->headers; header; header = header->next) {
     	debug("HTTP HEADER %s = %s", header->name, header->data);
     }
-#endif*/
+#endif
     return 0;
 }
 
