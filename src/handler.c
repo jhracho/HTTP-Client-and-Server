@@ -200,7 +200,9 @@ Status  handle_cgi_request(Request *r) {
     /* Export CGI environment variables from request:
      * http://en.wikipedia.org/wiki/Common_Gateway_Interface */
     setenv("DOCUMENT_ROOT", RootPath, 1);
-    setenv("QUERY_STRING",r->query, 1);
+    if(r->query) {
+        setenv("QUERY_STRING",r->query, 1);
+    }
     setenv("REMOTE_ADDR", r->host, 1);
     setenv("REMOTE_PORT", r->port, 1);
     setenv("REQUEST_METHOD", r->method, 1);

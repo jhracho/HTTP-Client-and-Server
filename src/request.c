@@ -31,12 +31,12 @@ int parse_request_headers(Request *r);
  * The returned request struct must be deallocated using free_request.
  **/
 Request * accept_request(int sfd) {
-    Request *r;
+    //Request *r;
     struct sockaddr raddr;
     socklen_t rlen = sizeof(struct sockaddr);
 
     /* Allocate request struct (zeroed) */
-    r = calloc(1, sizeof(Request));
+    Request *r = calloc(1, sizeof(Request));
     if (!r){
         debug("Unable to allocate request: %s", strerror(errno));
         goto fail;
