@@ -62,7 +62,7 @@ Status  handle_request(Request *r) {
 
     // Checking for stat failure
     else{
-        result = HTTP_STATUS_BAD_REQUEST;
+        result = HTTP_STATUS_NOT_FOUND;
         return handle_error(r, result);
     }
 
@@ -285,6 +285,8 @@ Status  handle_error(Request *r, Status status) {
     fprintf(r->stream, "<h1>%s</h1>\n", status_string);
     fprintf(r->stream, "<h3>Congrats, you broke our final project.</h3>\n");
     fprintf(r->stream, "</body>\n");
+
+    //fflush(r->stream);
 
     /* Return specified status */
     fflush(r->stream);
