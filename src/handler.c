@@ -108,23 +108,29 @@ Status  handle_browse_request(Request *r) {
     /* For each entry in directory, emit HTML list item */
     fprintf(r->stream, "<ul>\n");
     for(int i = 0; i < n; i++) {
-        if (streq(entries[i]->d_name, "."))
+        if (streq(entries[i]->d_name, ".")) {
+            free(entries[i]);
             continue;
+        }
         
-        fprintf(r->stream, "<li>");
+        //fprintf(r->stream, "<html>");
+        //fprintf(r->stream, "<head></head>");
+        //fprintf(r->stream, "<body>");
+        fprintf(r->stream, "<html>\n<head></head>\n<body>\n<li>\n");
+        //fprintf(r->stream, "<li>");
         if(streq(r->uri, "/")) {
-            fprintf(r->stream, "<a href=\"%s\">", entries[i]->d_name);
+            fprintf(r->stream, "<a href=\"/%s\">", entries[i]->d_name);
         }
         else {
             fprintf(r->stream, "<a href=\"%s/%s\">", r->uri, entries[i]->d_name);
         }
         //fprintf(r->stream, "<a href=\"%s/%s\">", r->uri, entries[i]->d_name);
         fprintf(r->stream, "%s", entries[i]->d_name);
-        fprintf(r->stream, "</a>");
+        fprintf(r->stream, "</a>\n");
         fprintf(r->stream, "</li>\n");
         free(entries[i]);
     }
-    fprintf(r->stream, "</ul>\n");
+    fprintf(r->stream, "</ul>\n</body>\n</html>");
 
     free(entries);
 
@@ -160,11 +166,15 @@ Status  handle_file_request(Request *r) {
     
     /* Determine mimetype */
     mimetype = determine_mimetype(r->path);
+    if(!mimetype) {
+        //return handle_error(r, HTTP_STATUS_BAD_REQUEST);
+        debug("no mimetype");
+    }
+        
     //debug("Mimetype: %s", mimetype);
     /* Write HTTP Headers with OK status and determined Content-Type */
     fprintf(r->stream, "HTTP/1.0 200 OK\r\n");
     fprintf(r->stream, "Content-Type: %s\r\n", mimetype);
-   // fprintf(r->stream, "Content-Type: text/html\r\n");
     fprintf(r->stream, "\r\n");
 
 
@@ -177,6 +187,7 @@ Status  handle_file_request(Request *r) {
 
     /* Close file, deallocate mimetype, return OK */
     fclose(fs);
+    free(mimetype);
 
     return HTTP_STATUS_OK;
 }
@@ -184,7 +195,7 @@ Status  handle_file_request(Request *r) {
 /**
  * Handle CGI request
  *
- * @param   r           HTTP Request structure.
+ * @param   r           HTTP Request structure
  * @return  Status of the HTTP file request.
  *
  * This popens and streams the results of the specified executables to the
@@ -200,9 +211,7 @@ Status  handle_cgi_request(Request *r) {
     /* Export CGI environment variables from request:
      * http://en.wikipedia.org/wiki/Common_Gateway_Interface */
     setenv("DOCUMENT_ROOT", RootPath, 1);
-    if(r->query) {
-        setenv("QUERY_STRING",r->query, 1);
-    }
+    setenv("QUERY_STRING",r->query, 1);
     setenv("REMOTE_ADDR", r->host, 1);
     setenv("REMOTE_PORT", r->port, 1);
     setenv("REQUEST_METHOD", r->method, 1);
@@ -214,7 +223,7 @@ Status  handle_cgi_request(Request *r) {
     // host, accept, accept-language, accept-encoding, connection, user-agent
     Header *temp = r->headers;
     if (!temp)
-        return HTTP_STATUS_BAD_REQUEST;
+        return handle_error(r, HTTP_STATUS_BAD_REQUEST);
 
     while(temp) {
         if(streq(temp->name,      "Host")) {
