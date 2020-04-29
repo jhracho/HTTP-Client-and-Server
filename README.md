@@ -33,7 +33,7 @@ Enumeration of the contributions of each group member:
 - Valgrind Errors:   	--						Stuart Hayden / Jake hracho
 - Experiments and Data: --						Jake Hracho
 - Video Recording:		-- 						Jake Hracho
-- Time:   respecting	--						Dr. Bui
+- Time: respecting	    --						Dr. Bui
 
 [Final Project]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/project.html
 [CSE 20289 Systems Programming (Spring 2020)]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/
