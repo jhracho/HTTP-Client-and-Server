@@ -9,7 +9,7 @@ This is the [Final Project] for [CSE 20289 Systems Programming (Spring 2020)].
 
 ## Demonstration
 
-- [Link to Demonstration Video](https://youtube.com/watch?v=NSSPyksJQIM)
+- [Link to Demonstration Video]
 
 ## Errata
 
@@ -37,3 +37,4 @@ Enumeration of the contributions of each group member:
 
 [Final Project]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/project.html
 [CSE 20289 Systems Programming (Spring 2020)]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/
+[Link to Demonstation Video]: https://youtube.com/watch?v=NSSPyksJQIM
