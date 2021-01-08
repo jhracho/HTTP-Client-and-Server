@@ -1,41 +1,8 @@
-# Project - README
+# HTTP Client and Server
+Code to practice low-level systems calls as they pertain to networking
 
-This is the [Final Project] for [CSE 20289 Systems Programming (Spring 2020)].
+## HTTP Server
+Coded in C, the HTTP server supports directory listings, static files, and CGI scripts
 
-## Members
-
-- Stuart Hayden (shayden2@nd.edu)
-- Jake Hracho   (jhracho@nd.edu)
-
-## Demonstration
-
-- [Link to Demonstration Video]
-- https://youtube.com/watch?v=NSSPyksJQIM
-
-## Errata
-
-Summary of things that don't work (quite right):
-- N/A - as far as we know
-
-## Contributions
-
-Enumeration of the contributions of each group member:
-
-- Thor:	Parse Command Line Arguments --			Stuart Hayden
-- Thor:	Hammer, Rest of program -- 				Jake Hracho
-- Spidey: socket.c   	-- 						Stuart Hayden
-- Spidey: Makefile   	-- 						Stuart Hayden
-- Spidey: single.c   	-- 						Stuart Hayden / Jake Hracho
-- Spidey: forking.c  	-- 						Stuart Hayden
-- Spidey: request.c  	-- 						Jake Hracho
-- Spidey: handler.c  	-- 						Stuart Hayden / Jake Hracho
-- Spidey: utils.c    	-- 						Stuart Hayden / Jake Hracho
-- Spidey: spidey.c   	-- 						Stuart Hayden
-- Valgrind Errors:   	--						Stuart Hayden / Jake hracho
-- Experiments and Data: --						Jake Hracho
-- Video Recording:		-- 						Jake Hracho
-- Time: respecting	    --						Dr. Bui
-
-[Final Project]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/project.html
-[CSE 20289 Systems Programming (Spring 2020)]: https://www3.nd.edu/~pbui/teaching/cse.20289.sp20/
-[Link to Demonstation Video]: https://youtube.com/watch?v=NSSPyksJQIM
+## HTTP Client
+Coded in Python, the client will test the HTTP Server's latency and throughput by sending a user-specified amount of requests, each of a user-specified size.
